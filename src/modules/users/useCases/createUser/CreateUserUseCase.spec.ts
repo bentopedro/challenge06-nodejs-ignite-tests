@@ -1,4 +1,5 @@
 import { STATUS_CODES } from "http";
+import { AppError } from "../../../../shared/errors/AppError";
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository";
 import { CreateUserUseCase } from "./CreateUserUseCase";
 import { ICreateUserDTO } from "./ICreateUserDTO"
@@ -17,14 +18,28 @@ describe("Create User", () => {
   it("should be able to create a new user", async () => {
     const user: ICreateUserDTO = {
       name: "New User",
-      email: "test@emai.com",
+      email: "test@email.com",
       password: "supersenha123",
     }
 
-    const resp = await createUserUseCase.execute(user)
+    await createUserUseCase.execute(user)
 
-    // console.log(resp);
+    expect(201);
+  });
 
-    expect(resp).toHaveProperty("id")
-  })
+  it("should not be able to create a user with an existing email", () => {
+    expect(async () => {
+      await createUserUseCase.execute({
+        name: "User Name",
+        email: "user@email.com",
+        password: "1234"
+      });
+
+      await createUserUseCase.execute({
+        name: "User Name2",
+        email: "user@email.com",
+        password: "1234"
+      });
+    }).rejects.toBeInstanceOf(AppError);
+  });
 })
