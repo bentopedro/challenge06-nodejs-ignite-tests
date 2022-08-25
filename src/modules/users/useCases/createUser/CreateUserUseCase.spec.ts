@@ -21,10 +21,10 @@ describe("Create User", () => {
       password: "supersenha123",
     }
 
-    await createUserUseCase.execute(user)
+    const resp = await createUserUseCase.execute(user)
 
     // console.log(resp);
 
-    expect(STATUS_CODES).toBe(201)
+    expect(resp).toHaveProperty("id")
   })
 })
